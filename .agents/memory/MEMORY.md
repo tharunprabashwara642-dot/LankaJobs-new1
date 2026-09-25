@@ -1,0 +1,1 @@
+- [Expo preview warning](expo-preview-quirk.md) — missing native GLib for React Native DevTools is non-blocking when Metro and preview still render.

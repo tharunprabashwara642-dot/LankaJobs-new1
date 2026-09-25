@@ -1,6 +1,6 @@
-# [Project name]
+# LankaJobs
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Native Expo job discovery and job-posting foundation for Sri Lankan job seekers and employers.
 
 ## Run & Operate
 
@@ -22,23 +22,31 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/lanka-jobs/app/` — Expo Router screens and tab navigation.
+- `artifacts/lanka-jobs/data/jobs.ts` — typed job model, categories, and replaceable demo listing source.
+- `artifacts/lanka-jobs/context/AppContext.tsx` — local saved-job, draft-job, and language persistence.
+- `artifacts/lanka-jobs/constants/colors.ts` — LankaJobs visual tokens.
+- `artifacts/lanka-jobs/assets/images/icon.png` — generated app icon.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The first mobile build is frontend-first and uses AsyncStorage for a testable local shortlist and draft flow; production user/job ownership must move to the shared backend before account actions are enabled.
+- Demo jobs are typed data in one replaceable source, not embedded in screen components.
+- Secure authentication is intentionally not faked. The sign-in surface documents the pending phone OTP/Google connection rather than creating local accounts.
+- Normal job posting is free; the current posting form saves a clearly labeled local draft and does not publish or simulate moderation.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+LankaJobs lets people browse Sri Lankan job listings, search and filter by title/company/location/category/work mode, open job details, save a local shortlist, change the app language, and explore the employer posting foundation. The mobile UI is ready for backend/auth integration without presenting unavailable capabilities as live.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- English is the default language; Sinhala and Tamil are represented in Settings for the localization pass.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Do not add fake authentication, payment confirmation, moderation, or push notifications. Connect those through the backend/integration layer first.
+- Expo preview runs through the managed `artifacts/lanka-jobs: expo` workflow and can be scanned from the Preview on your phone flow.
 
 ## Pointers
 

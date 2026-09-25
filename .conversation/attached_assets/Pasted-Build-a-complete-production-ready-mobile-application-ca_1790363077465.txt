@@ -1,0 +1,570 @@
+Build a complete, production-ready mobile application called **LankaJobs**, a Sri Lankan job discovery and job posting platform.
+
+Do not treat this as a simple demo, landing page, or UI mockup. Build the application with a clean, scalable architecture so the initial demo data can later be replaced with real production data and a separate Admin Web can control the platform.
+
+## 1. Main Purpose
+
+LankaJobs helps people in Sri Lanka discover and find employment opportunities easily.
+
+Users should be able to:
+
+- Browse jobs
+- Search for jobs
+- Filter and sort jobs
+- View detailed job information
+- Save jobs
+- Apply for jobs
+- Create an account
+- Post legitimate job vacancies
+- Manage their own job posts
+
+The application should eventually become a real job marketplace/platform for Sri Lanka.
+
+## 2. Target Users
+
+The application is intended for:
+
+- Sri Lankan job seekers
+- Students
+- School leavers
+- University students
+- Graduates
+- Experienced professionals
+- People looking for part-time work
+- People looking for internships
+- People looking for remote jobs
+- Employers
+- Companies
+- Individuals who want to publish legitimate job vacancies
+
+## 3. Languages
+
+The application must support:
+
+- English
+- Sinhala
+- Tamil
+
+English can be the default language.
+
+Users must be able to change the application language from Settings.
+
+Translate the complete user interface, including:
+
+- Navigation
+- Buttons
+- Forms
+- Filters
+- Error messages
+- Empty states
+- Settings
+- Profile
+- Job-posting screens
+- Validation messages
+- Help content
+
+Do not translate only the main screens.
+
+## 4. Authentication
+
+Support both:
+
+- Phone number + OTP
+- Google Sign-In
+
+Users should be able to browse public jobs without logging in.
+
+Authentication should be required for personalized actions such as:
+
+- Saving jobs
+- Posting jobs
+- Managing posted jobs
+- Managing a profile
+
+Do not create fake authentication.
+
+Use secure authentication and session handling.
+
+## 5. Initial Demo Data
+
+For the first version, populate the application with realistic AI-generated Sri Lankan demo job listings so the application can be tested immediately.
+
+Include realistic jobs from categories such as:
+
+- IT & Software
+- Banking & Finance
+- Sales & Marketing
+- Education
+- Healthcare
+- Engineering
+- Hospitality
+- Customer Service
+- Government
+- Private Sector
+- Remote Jobs
+- Part-time Jobs
+- Internships
+
+The demo data must be clearly structured so it can later be completely removed and replaced by real production data.
+
+Do not permanently hard-code the application around the demo jobs.
+
+## 6. Job Data Model
+
+Design each job with appropriate fields, including:
+
+- Unique job ID
+- Job title
+- Company/employer name
+- Company logo/image
+- Description
+- Category
+- Location
+- Employment type
+- Salary or salary range
+- Experience requirement
+- Education requirement
+- Required skills
+- Posted date
+- Closing date
+- Application URL
+- Application email/contact information
+- Remote / On-site / Hybrid
+- Job status
+- Created by
+- Created date
+- Updated date
+
+The architecture should allow additional fields to be added later.
+
+## 7. Job Discovery
+
+Create a modern home screen containing:
+
+- LankaJobs branding
+- Search bar
+- Popular categories
+- Latest jobs
+- Remote jobs
+- Internship jobs
+- Recommended/recent jobs
+- Featured jobs section prepared for future use
+
+Users must be able to:
+
+- Search by job title
+- Search by company
+- Search by location
+- Filter by category
+- Filter by employment type
+- Filter by salary when available
+- Filter by work mode
+- Sort by newest
+- Clear filters easily
+
+Search and filtering should feel fast and smooth.
+
+## 8. Job Details
+
+Create a professional job-details screen.
+
+Display:
+
+- Job title
+- Company
+- Company image/logo when available
+- Location
+- Employment type
+- Salary when available
+- Posted date
+- Closing date
+- Description
+- Requirements
+- Education requirements
+- Skills
+- Application information
+
+Provide a clear **Apply Now** action.
+
+If an external application URL is available, open it safely.
+
+Never invent an application URL.
+
+## 9. Saved Jobs
+
+Authenticated users must be able to:
+
+- Save jobs
+- Unsave jobs
+- View saved jobs
+
+Saved jobs must be associated with the authenticated user.
+
+One user's saved jobs must never appear in another user's account.
+
+## 10. User Profile
+
+Create a profile section containing:
+
+- Name
+- Profile picture
+- Phone number
+- Email
+- Preferred language
+- Saved jobs
+- My posted jobs
+
+Allow users to edit appropriate profile information.
+
+## 11. Posting Jobs
+
+Authenticated users must be able to create legitimate job vacancies.
+
+Users should be able to:
+
+- Create a job
+- Edit their own job
+- View their own jobs
+- Delete their own job
+- Cancel their own job when appropriate
+- See the status of their submitted jobs
+
+A user must be able to create **multiple job listings**.
+
+Do not limit a user to one job.
+
+Users must never be able to edit or delete another user's jobs.
+
+## 12. Job Posting Cost
+
+**Job posting is completely FREE in the initial version.**
+
+Do not require payment to create or publish a normal job listing.
+
+Do not add fake checkout screens.
+
+Do not simulate successful payments.
+
+However, design the architecture so that paid features can be introduced later without rebuilding the entire application.
+
+Future features may include:
+
+- Featured jobs
+- Sponsored jobs
+- Job promotion
+- Paid packages
+- Advertising packages
+- Payment requirements
+
+These features must remain disabled in the initial version.
+
+## 13. Future Payment Support
+
+The initial version must NOT actively charge users.
+
+However, prepare the architecture for future:
+
+- Card payments
+- Bank transfers
+- Other secure payment methods
+- Featured-job packages
+- Sponsored-job packages
+- Advertising packages
+
+Future payment settings should be configurable from the future Admin Web.
+
+Never store payment secrets or private credentials inside the mobile application.
+
+Never fake payment verification.
+
+## 14. My Jobs
+
+Create a dedicated **My Jobs** section.
+
+Users should be able to see their own:
+
+- Draft jobs
+- Submitted jobs
+- Published jobs
+- Rejected jobs
+- Expired jobs
+- Cancelled jobs
+
+Use clear status indicators.
+
+## 15. Job Moderation
+
+Design the data model so jobs can have statuses such as:
+
+- Draft
+- Pending Review
+- Published
+- Rejected
+- Expired
+- Cancelled
+
+The platform should eventually allow an administrator to review and moderate submitted jobs.
+
+Do not pretend that an admin moderation system exists if it has not been connected yet.
+
+## 16. Future Admin Web
+
+A separate **LankaJobs Admin Web** will be developed later.
+
+The mobile application's architecture must therefore be compatible with an external administration system.
+
+The future Admin Web should be able to manage:
+
+- Jobs
+- Users
+- Categories
+- Employers
+- Job moderation
+- Featured jobs
+- Sponsored jobs
+- Advertisements
+- App settings
+- Language/content settings
+- Payment settings
+- Payment methods
+- Packages
+- Pricing
+- Reports
+- Platform statistics
+
+The mobile app must not be designed in a way that prevents an external Admin Web from becoming the authoritative management interface later.
+
+## 17. Notifications
+
+Prepare the application for future notifications such as:
+
+- New job alerts
+- Saved-job updates
+- Job expiry reminders
+- Job approval notifications
+- Job rejection notifications
+- Employer notifications
+- Admin announcements
+
+Do not generate fake notifications and present them as real backend notifications.
+
+## 18. UI / UX Design
+
+Create a modern, professional and trustworthy job-platform interface.
+
+Design characteristics:
+
+- Clean
+- Minimal
+- Professional
+- Friendly
+- Eye-friendly
+- Easy to understand
+- Fast
+- Smooth
+- Mobile-first
+
+Avoid:
+
+- Extremely bright colors
+- Excessive gradients
+- Excessive animations
+- Heavy visual effects
+- Unnecessary decorative elements
+- Cluttered screens
+
+Use readable typography, good spacing, clear hierarchy and accessible contrast.
+
+## 19. Performance
+
+The application should run smoothly on:
+
+- Low-end Android devices
+- Mid-range Android devices
+- Modern Android devices
+
+Optimize:
+
+- Image loading
+- Lists
+- Search
+- Filtering
+- Navigation
+- Animations
+- Network requests
+- Memory usage
+
+Use pagination or lazy loading for large job lists.
+
+Do not load thousands of jobs into memory at once.
+
+## 20. Navigation
+
+Use simple and intuitive navigation.
+
+Recommended primary navigation:
+
+- Home
+- Jobs
+- Categories
+- Saved
+- Profile
+
+Profile or menu should provide access to:
+
+- My Jobs
+- Post a Job
+- Settings
+- Language
+- Help
+- Contact
+- Privacy Policy
+- Terms & Conditions
+
+## 21. Data Architecture
+
+Do not build the application as a collection of hard-coded screens.
+
+Separate the application's:
+
+- UI
+- Users
+- Jobs
+- Categories
+- Saved jobs
+- User-created jobs
+- Settings
+- Future payment configuration
+- Future advertisements
+
+The initial demo data must be replaceable.
+
+The application should be able to transition from demo data to a real backend/database without redesigning the entire UI.
+
+## 22. Backend Readiness
+
+The application should be designed so that a real backend/database can become the authoritative data source.
+
+Avoid storing important production data only inside the device.
+
+Production data such as:
+
+- Users
+- Jobs
+- Categories
+- Saved jobs
+- Job ownership
+- Job status
+
+must eventually be stored securely in a real backend/database.
+
+## 23. Security
+
+Follow secure application practices.
+
+Never expose:
+
+- Admin passwords
+- API secrets
+- Service-role keys
+- Private backend credentials
+- Payment secrets
+- Private tokens
+
+inside the mobile application.
+
+Enforce ownership checks on user-created data.
+
+A user must only be able to modify their own profile and their own job listings.
+
+## 24. Empty States and Errors
+
+Create proper user-friendly states for:
+
+- No jobs found
+- No saved jobs
+- No posted jobs
+- Network failure
+- Authentication failure
+- Invalid form data
+- Expired job
+- Deleted job
+- Failed request
+- Empty category
+
+Do not leave blank screens.
+
+## 25. Accessibility
+
+Use:
+
+- Readable font sizes
+- Clear buttons
+- Adequate touch targets
+- Good contrast
+- Simple language
+- Consistent navigation
+
+The interface should be usable by people with different levels of technical experience.
+
+## 26. Future Scalability
+
+The application should be designed so that it can later support:
+
+- Large numbers of jobs
+- Large numbers of users
+- Company profiles
+- Employer accounts
+- Job alerts
+- Advanced search
+- Recommendations
+- Featured jobs
+- Sponsored jobs
+- Paid packages
+- Advertisements
+- Analytics
+- Notifications
+- Admin moderation
+- Multiple payment methods
+
+Do not implement unnecessary future features now. Prepare the architecture without adding unnecessary complexity.
+
+## 27. Important Rules
+
+Do NOT:
+
+- Require payment for normal job posting
+- Limit users to one job
+- Use fake authentication
+- Use fake payment success
+- Expose private credentials
+- Permanently hard-code demo jobs
+- Pretend unavailable backend functionality is working
+- Make users pay during the initial version
+- Build unnecessary admin functionality inside the mobile app
+- Create a complicated UI
+- Sacrifice performance for visual effects
+
+## 28. First Version Priority
+
+Prioritize these features in this order:
+
+1. Working authentication
+2. Home screen
+3. Job browsing
+4. Search
+5. Filters
+6. Job details
+7. Saved jobs
+8. User profile
+9. Free job posting
+10. My Jobs
+11. English/Sinhala/Tamil localization
+12. Smooth performance
+13. Secure data structure
+14. Future backend readiness
+15. Future Admin Web compatibility
+
+Build the application as **LankaJobs**, a real Sri Lankan job platform foundation—not merely a demo UI.
+
+If any requested functionality cannot actually be implemented in the current environment, clearly identify that limitation instead of creating a fake implementation.
