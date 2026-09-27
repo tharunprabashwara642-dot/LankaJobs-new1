@@ -28,6 +28,7 @@ function RootLayoutNav() {
       <Stack.Screen name="post-job" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="sign-in" />
+      <Stack.Screen name="profile-setup" />
     </Stack>
   );
 }

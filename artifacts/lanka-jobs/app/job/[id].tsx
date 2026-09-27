@@ -17,13 +17,14 @@ export default function JobDetailScreen() {
   }
 
   const saved = savedJobIds.includes(job.id);
+  const toggle = async () => { try { await toggleSaved(job.id); } catch { router.push('/sign-in'); } };
   const apply = () => {
     if (job.applicationUrl) Linking.openURL(job.applicationUrl);
     else if (job.applicationEmail) Linking.openURL(`mailto:${job.applicationEmail}?subject=${encodeURIComponent(`Application for ${job.title}`)}`);
   };
   return (
     <Screen>
-      <View style={styles.nav}><Pressable testID="job-back" onPress={() => router.back()} style={[styles.navButton, { backgroundColor: colors.card, borderColor: colors.border }]}><Ionicons name="arrow-back" size={19} color={colors.foreground} /></Pressable><Pressable testID="job-save" onPress={() => toggleSaved(job.id)} style={[styles.navButton, { backgroundColor: colors.card, borderColor: colors.border }]}><Ionicons name={saved ? 'bookmark' : 'bookmark-outline'} size={19} color={saved ? colors.primary : colors.foreground} /></Pressable></View>
+      <View style={styles.nav}><Pressable testID="job-back" onPress={() => router.back()} style={[styles.navButton, { backgroundColor: colors.card, borderColor: colors.border }]}><Ionicons name="arrow-back" size={19} color={colors.foreground} /></Pressable><Pressable testID="job-save" onPress={() => { void toggle(); }} style={[styles.navButton, { backgroundColor: colors.card, borderColor: colors.border }]}><Ionicons name={saved ? 'bookmark' : 'bookmark-outline'} size={19} color={saved ? colors.primary : colors.foreground} /></Pressable></View>
       <View style={[styles.companyHero, { backgroundColor: colors.secondary }]}><View style={[styles.companyMark, { backgroundColor: colors.card }]}><Text style={[styles.companyMarkText, { color: colors.primary }]}>{job.companyMark}</Text></View><View style={styles.companyCopy}><Text style={[styles.company, { color: colors.primary }]}>{job.company}</Text><Text style={[styles.title, { color: colors.foreground }]}>{job.title}</Text><Text style={[styles.posted, { color: colors.mutedForeground }]}>{job.postedAt} · {job.location}</Text></View></View>
       <View style={styles.pillRow}><View style={[styles.pill, { backgroundColor: colors.secondary }]}><Ionicons name="briefcase-outline" size={14} color={colors.primary} /><Text style={[styles.pillText, { color: colors.secondaryForeground }]}>{job.employmentType}</Text></View><View style={[styles.pill, { backgroundColor: colors.accent }]}><Ionicons name="layers-outline" size={14} color={colors.accentForeground} /><Text style={[styles.pillText, { color: colors.accentForeground }]}>{job.workMode}</Text></View></View>
       <View style={styles.quickFacts}><Fact icon="cash-outline" label="Salary" value={job.salary ?? 'Not disclosed'} /><Fact icon="calendar-outline" label="Closing date" value={job.closingDate} /><Fact icon="trending-up-outline" label="Experience" value={job.experience} /></View>

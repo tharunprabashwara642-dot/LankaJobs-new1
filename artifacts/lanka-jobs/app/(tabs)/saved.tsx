@@ -10,11 +10,12 @@ export default function SavedScreen() {
   const colors = useColors();
   const router = useRouter();
   const { jobs, savedJobIds, toggleSaved } = useApp();
+  const save = async (jobId: string) => { try { await toggleSaved(jobId); } catch { router.push('/sign-in'); } };
   const saved = jobs.filter((job) => savedJobIds.includes(job.id));
   return (
     <Screen>
       <View><Text style={[styles.eyebrow, { color: colors.primary }]}>YOUR SHORTLIST</Text><Text style={[styles.title, { color: colors.foreground }]}>Saved jobs</Text><Text style={[styles.subtitle, { color: colors.mutedForeground }]}>Keep the roles you want to come back to.</Text></View>
-      {saved.length > 0 ? saved.map((job) => <JobCard key={job.id} job={job} saved onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => toggleSaved(job.id)} />) : <View style={[styles.empty, { backgroundColor: colors.card, borderColor: colors.border }]}><View style={[styles.icon, { backgroundColor: colors.secondary }]}><Ionicons name="bookmark-outline" size={26} color={colors.primary} /></View><Text style={[styles.emptyTitle, { color: colors.foreground }]}>No saved jobs yet</Text><Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Tap the bookmark on a job to build your shortlist.</Text></View>}
+      {saved.length > 0 ? saved.map((job) => <JobCard key={job.id} job={job} saved onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => save(job.id)} />) : <View style={[styles.empty, { backgroundColor: colors.card, borderColor: colors.border }]}><View style={[styles.icon, { backgroundColor: colors.secondary }]}><Ionicons name="bookmark-outline" size={26} color={colors.primary} /></View><Text style={[styles.emptyTitle, { color: colors.foreground }]}>No saved jobs yet</Text><Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Tap the bookmark on a job to build your shortlist.</Text></View>}
     </Screen>
   );
 }

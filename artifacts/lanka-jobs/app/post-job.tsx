@@ -5,14 +5,13 @@ import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-nativ
 import { KeyboardAwareScrollViewCompat } from '@/components/KeyboardAwareScrollViewCompat';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
-import { Job, categories } from '@/data/jobs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function PostJobScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { addJob } = useApp();
+  const { addJob, categories, authUser } = useApp();
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
   const [location, setLocation] = useState('');
@@ -20,32 +19,33 @@ export default function PostJobScreen() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Technology');
 
-  const submit = () => {
+  const submit = async () => {
+    if (!authUser) {
+      router.push('/sign-in');
+      return;
+    }
     if (!title.trim() || !company.trim() || !location.trim() || !email.trim() || !description.trim()) {
       Alert.alert('Almost there', 'Please complete every field before saving your listing.');
       return;
     }
-    const job: Job = {
-      id: `local-${Date.now().toString()}-${Math.random().toString(36).slice(2, 8)}`,
-      title: title.trim(),
-      company: company.trim(),
-      companyMark: company.trim().slice(0, 2).toUpperCase(),
-      description: description.trim(),
-      category,
-      location: location.trim(),
-      employmentType: 'Full-time',
-      experience: 'Not specified',
-      education: 'Not specified',
-      skills: [],
-      postedAt: 'Just now',
-      closingDate: 'Not specified',
-      applicationEmail: email.trim(),
-      workMode: 'On-site',
-      status: 'draft',
-      createdBy: 'local-user',
-    };
-    addJob(job);
-    Alert.alert('Draft saved', 'This listing is saved on this device. Sign in to submit it for review when account services are connected.', [{ text: 'Done', onPress: () => router.back() }]);
+    try {
+      await addJob({
+        title: title.trim(),
+        company: company.trim(),
+        description: description.trim(),
+        categoryId: categories.find((item) => item.name === category)?.id,
+        location: location.trim(),
+        employmentType: 'Full-time',
+        workMode: 'On-site',
+        experience: 'Not specified',
+        education: 'Not specified',
+        skills: [],
+        applicationEmail: email.trim(),
+      });
+      Alert.alert('Draft saved', 'Your draft is stored in LankaJobs. Submit it from My jobs when it is ready for review.', [{ text: 'Done', onPress: () => router.back() }]);
+    } catch (error) {
+      Alert.alert('Could not save job', error instanceof Error ? error.message : 'Please try again.');
+    }
   };
 
   return (
@@ -60,7 +60,7 @@ export default function PostJobScreen() {
         <View style={styles.field}><Text style={[styles.label, { color: colors.foreground }]}>Category</Text><View style={styles.categoryRow}>{categories.map((item) => <Pressable key={item.name} onPress={() => setCategory(item.name)} style={[styles.category, { backgroundColor: category === item.name ? colors.primary : colors.card, borderColor: category === item.name ? colors.primary : colors.border }]}><Text style={[styles.categoryText, { color: category === item.name ? colors.primaryForeground : colors.foreground }]}>{item.name}</Text></Pressable>)}</View></View>
         <View style={styles.field}><Text style={[styles.label, { color: colors.foreground }]}>Description</Text><TextInput multiline value={description} onChangeText={setDescription} placeholder="Tell candidates what they will do and what good looks like." placeholderTextColor={colors.mutedForeground} style={[styles.textArea, { backgroundColor: colors.card, borderColor: colors.border, color: colors.foreground }]} textAlignVertical="top" /></View>
         <Pressable testID="save-job-draft" onPress={submit} style={({ pressed }) => [styles.submit, { backgroundColor: colors.primary, opacity: pressed ? 0.86 : 1 }]}><Text style={[styles.submitText, { color: colors.primaryForeground }]}>Save job draft</Text><Ionicons name="arrow-forward" size={18} color={colors.primaryForeground} /></Pressable>
-        <Text style={[styles.note, { color: colors.mutedForeground }]}>No payment is required. This local draft is not published and cannot be seen by other users.</Text>
+         <Text style={[styles.note, { color: colors.mutedForeground }]}>No payment is required. Drafts are private until you submit them for moderation.</Text>
       </KeyboardAwareScrollViewCompat>
     </View>
   );

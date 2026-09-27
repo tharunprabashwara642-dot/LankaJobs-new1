@@ -7,7 +7,7 @@ type Props = {
   job: Job;
   saved: boolean;
   onPress: () => void;
-  onToggleSave: () => void;
+  onToggleSave: () => void | Promise<void>;
   compact?: boolean;
 };
 
@@ -27,7 +27,7 @@ export function JobCard({ job, saved, onPress, onToggleSave, compact = false }: 
           <Text style={[styles.title, { color: colors.foreground }]} numberOfLines={2}>{job.title}</Text>
           <Text style={[styles.company, { color: colors.mutedForeground }]}>{job.company}</Text>
         </View>
-        <Pressable testID={`save-${job.id}`} onPress={onToggleSave} hitSlop={12} style={styles.saveButton}>
+        <Pressable testID={`save-${job.id}`} onPress={() => { void onToggleSave(); }} hitSlop={12} style={styles.saveButton}>
           <Ionicons name={saved ? 'bookmark' : 'bookmark-outline'} size={21} color={saved ? colors.primary : colors.mutedForeground} />
         </Pressable>
       </View>

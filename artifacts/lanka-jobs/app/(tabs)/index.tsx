@@ -4,14 +4,14 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { JobCard } from '@/components/JobCard';
 import { Screen } from '@/components/Screen';
-import { categories } from '@/data/jobs';
 import { useApp } from '@/context/AppContext';
 import { useColors } from '@/hooks/useColors';
 
 export default function HomeScreen() {
   const colors = useColors();
   const router = useRouter();
-  const { jobs, savedJobIds, toggleSaved } = useApp();
+  const { jobs, savedJobIds, categories, toggleSaved } = useApp();
+  const save = async (jobId: string) => { try { await toggleSaved(jobId); } catch (error) { router.push('/sign-in'); } };
   const [query, setQuery] = useState('');
   const latest = jobs.slice(0, 4);
   const remote = useMemo(() => jobs.filter((job) => job.workMode === 'Remote').slice(0, 2), [jobs]);
@@ -21,11 +21,11 @@ export default function HomeScreen() {
       <View style={styles.topRow}><View><Text style={[styles.brand, { color: colors.foreground }]}>Lanka<Text style={{ color: colors.primary }}>Jobs</Text></Text><Text style={[styles.greeting, { color: colors.mutedForeground }]}>Find work that moves you forward.</Text></View><Pressable testID="home-profile" onPress={() => router.push('/profile')} style={[styles.profileButton, { backgroundColor: colors.secondary }]}><Ionicons name="person-outline" size={20} color={colors.primary} /></Pressable></View>
       <View style={[styles.hero, { backgroundColor: colors.primary }]}><Text style={styles.heroKicker}>OPPORTUNITIES ACROSS SRI LANKA</Text><Text style={[styles.heroTitle, { color: colors.primaryForeground }]}>Your next chapter starts here.</Text><Text style={styles.heroCopy}>Search trusted roles from companies hiring now.</Text><View style={[styles.searchBox, { backgroundColor: colors.card }]}><Ionicons name="search" size={19} color={colors.mutedForeground} /><TextInput testID="home-search" value={query} onChangeText={setQuery} onSubmitEditing={search} placeholder="Job title, company or location" placeholderTextColor={colors.mutedForeground} style={[styles.searchInput, { color: colors.foreground }]} returnKeyType="search" /><Pressable testID="home-search-submit" onPress={search} style={[styles.searchButton, { backgroundColor: colors.accent }]}><Ionicons name="arrow-forward" size={18} color={colors.accentForeground} /></Pressable></View></View>
       <View style={styles.sectionHeader}><Text style={[styles.sectionTitle, { color: colors.foreground }]}>Browse by category</Text><Pressable onPress={() => router.push('/jobs')}><Text style={[styles.seeAll, { color: colors.primary }]}>See all</Text></Pressable></View>
-      <View style={styles.categoryGrid}>{categories.map((category) => <Pressable key={category.name} testID={`category-${category.name}`} onPress={() => router.push(`/jobs?category=${encodeURIComponent(category.name)}`)} style={[styles.category, { backgroundColor: colors.card, borderColor: colors.border }]}><View style={[styles.categoryIcon, { backgroundColor: category.colorKey === 'gold' ? colors.accent : colors.secondary }]}><Ionicons name={category.icon} size={18} color={category.colorKey === 'gold' ? colors.accentForeground : colors.primary} /></View><Text style={[styles.categoryText, { color: colors.foreground }]} numberOfLines={1}>{category.name}</Text></Pressable>)}</View>
+      <View style={styles.categoryGrid}>{categories.map((category) => <Pressable key={category.name} testID={`category-${category.name}`} onPress={() => router.push(`/jobs?category=${encodeURIComponent(category.name)}`)} style={[styles.category, { backgroundColor: colors.card, borderColor: colors.border }]}><View style={[styles.categoryIcon, { backgroundColor: category.name === 'Finance' ? colors.accent : colors.secondary }]}><Ionicons name={category.icon as keyof typeof Ionicons.glyphMap} size={18} color={category.name === 'Finance' ? colors.accentForeground : colors.primary} /></View><Text style={[styles.categoryText, { color: colors.foreground }]} numberOfLines={1}>{category.name}</Text></Pressable>)}</View>
       <View style={styles.sectionHeader}><Text style={[styles.sectionTitle, { color: colors.foreground }]}>Latest jobs</Text><Pressable onPress={() => router.push('/jobs')}><Text style={[styles.seeAll, { color: colors.primary }]}>View all</Text></Pressable></View>
-      {latest.map((job) => <JobCard key={job.id} job={job} saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => toggleSaved(job.id)} />)}
+      {latest.map((job) => <JobCard key={job.id} job={job} saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => save(job.id)} />)}
       <View style={styles.sectionHeader}><Text style={[styles.sectionTitle, { color: colors.foreground }]}>Remote work</Text><Pressable onPress={() => router.push('/jobs')}><Text style={[styles.seeAll, { color: colors.primary }]}>Explore</Text></Pressable></View>
-      {remote.map((job) => <JobCard key={job.id} job={job} compact saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => toggleSaved(job.id)} />)}
+      {remote.map((job) => <JobCard key={job.id} job={job} compact saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => save(job.id)} />)}
     </Screen>
   );
 }

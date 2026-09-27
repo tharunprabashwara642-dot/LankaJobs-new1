@@ -14,6 +14,7 @@ export default function JobsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ query?: string; category?: string }>();
   const { jobs, savedJobIds, toggleSaved } = useApp();
+  const save = async (jobId: string) => { try { await toggleSaved(jobId); } catch { router.push('/sign-in'); } };
   const [query, setQuery] = useState(() => String(params.query ?? ''));
   const [selectedFilter, setSelectedFilter] = useState(() => String(params.category ?? 'All'));
   const results = useMemo(() => jobs.filter((job) => {
@@ -27,7 +28,7 @@ export default function JobsScreen() {
       <View style={[styles.searchBox, { backgroundColor: colors.card, borderColor: colors.border }]}><Ionicons name="search" size={19} color={colors.mutedForeground} /><TextInput testID="jobs-search" value={query} onChangeText={setQuery} placeholder="Search title, company or city" placeholderTextColor={colors.mutedForeground} style={[styles.input, { color: colors.foreground }]} returnKeyType="search" /></View>
       <View style={styles.filterRow}>{filters.map((filter) => <Pressable key={filter} testID={`filter-${filter}`} onPress={() => setSelectedFilter(filter)} style={[styles.filter, { backgroundColor: selectedFilter === filter ? colors.primary : colors.card, borderColor: selectedFilter === filter ? colors.primary : colors.border }]}><Text style={[styles.filterText, { color: selectedFilter === filter ? colors.primaryForeground : colors.mutedForeground }]}>{filter}</Text></Pressable>)}</View>
       <View style={styles.resultHeader}><Text style={[styles.sectionTitle, { color: colors.foreground }]}>All jobs</Text><Text style={[styles.resultMeta, { color: colors.mutedForeground }]}>Newest first</Text></View>
-      {results.length > 0 ? results.map((job) => <JobCard key={job.id} job={job} saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => toggleSaved(job.id)} />) : <View style={[styles.empty, { borderColor: colors.border, backgroundColor: colors.card }]}><Ionicons name="search-outline" size={28} color={colors.mutedForeground} /><Text style={[styles.emptyTitle, { color: colors.foreground }]}>No jobs found</Text><Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Try another title, company, city, or filter.</Text></View>}
+      {results.length > 0 ? results.map((job) => <JobCard key={job.id} job={job} saved={savedJobIds.includes(job.id)} onPress={() => router.push(`/job/${job.id}`)} onToggleSave={() => save(job.id)} />) : <View style={[styles.empty, { borderColor: colors.border, backgroundColor: colors.card }]}><Ionicons name="search-outline" size={28} color={colors.mutedForeground} /><Text style={[styles.emptyTitle, { color: colors.foreground }]}>No jobs found</Text><Text style={[styles.emptyText, { color: colors.mutedForeground }]}>Try another title, company, city, or filter.</Text></View>}
     </Screen>
   );
 }

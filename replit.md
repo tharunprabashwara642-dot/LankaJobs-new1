@@ -9,7 +9,13 @@ Native Expo job discovery and job-posting foundation for Sri Lankan job seekers 
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+- `pnpm --filter @workspace/db run migrate` — apply checked-in SQL migrations
 - Required env: `DATABASE_URL` — Postgres connection string
+- API auth env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, and optional `GOOGLE_SUCCESS_REDIRECT`
+- Phone auth env: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`
+- Mobile API env: `EXPO_PUBLIC_API_URL`
+- Optional admin bootstrap env: `ADMIN_EMAIL` or `ADMIN_PHONE`
+- Optional web CORS env: `WEB_ORIGIN` (comma-separated origins)
 
 ## Stack
 
@@ -23,21 +29,22 @@ Native Expo job discovery and job-posting foundation for Sri Lankan job seekers 
 ## Where things live
 
 - `artifacts/lanka-jobs/app/` — Expo Router screens and tab navigation.
-- `artifacts/lanka-jobs/data/jobs.ts` — typed job model, categories, and replaceable demo listing source.
-- `artifacts/lanka-jobs/context/AppContext.tsx` — local saved-job, draft-job, and language persistence.
+- `artifacts/lanka-jobs/data/jobs.ts` — UI job types retained for screen compatibility.
+- `artifacts/lanka-jobs/context/AppContext.tsx` — API-backed job, profile, session, saved-job, and language state.
+- `artifacts/admin-web/` — real admin client using the same API and database.
 - `artifacts/lanka-jobs/constants/colors.ts` — LankaJobs visual tokens.
 - `artifacts/lanka-jobs/assets/images/icon.png` — generated app icon.
 
 ## Architecture decisions
 
-- The first mobile build is frontend-first and uses AsyncStorage for a testable local shortlist and draft flow; production user/job ownership must move to the shared backend before account actions are enabled.
-- Demo jobs are typed data in one replaceable source, not embedded in screen components.
-- Secure authentication is intentionally not faked. The sign-in surface documents the pending phone OTP/Google connection rather than creating local accounts.
-- Normal job posting is free; the current posting form saves a clearly labeled local draft and does not publish or simulate moderation.
+- Jobs, categories, profiles, saved jobs, sessions, moderation, reports, and settings are persisted through Postgres/Drizzle.
+- AsyncStorage is used only for the language preference; session tokens use Expo SecureStore and the backend remains authoritative.
+- Google OAuth and phone OTP are real provider integrations. The UI does not fabricate accounts or verification codes when provider configuration is absent.
+- Normal job posting is free; new posts are server-side drafts and must be submitted for moderation before publication.
 
 ## Product
 
-LankaJobs lets people browse Sri Lankan job listings, search and filter by title/company/location/category/work mode, open job details, save a local shortlist, change the app language, and explore the employer posting foundation. The mobile UI is ready for backend/auth integration without presenting unavailable capabilities as live.
+LankaJobs lets people browse server-backed Sri Lankan job listings, search/filter with pagination, save jobs to their account, edit a profile, get transparent profile-based recommendations, and create/moderate job drafts.
 
 ## User preferences
 
@@ -46,6 +53,7 @@ LankaJobs lets people browse Sri Lankan job listings, search and filter by title
 ## Gotchas
 
 - Do not add fake authentication, payment confirmation, moderation, or push notifications. Connect those through the backend/integration layer first.
+- Payment settings are present for future configuration but seed with `postingPrice=0`, `featuredPrice=0`, `sponsoredPrice=0`, and `paymentsEnabled=false`.
 - Expo preview runs through the managed `artifacts/lanka-jobs: expo` workflow and can be scanned from the Preview on your phone flow.
 
 ## Pointers

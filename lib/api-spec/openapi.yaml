@@ -1,22 +1,21 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 1.0.0
+  description: LankaJobs mobile, admin, authentication, and moderation API
 servers:
   - url: /api
-    description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: jobs
+  - name: profile
+  - name: admin
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
-      summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +23,364 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /auth/config:
+    get:
+      operationId: authConfig
+      tags: [auth]
+      responses:
+        "200":
+          description: Provider availability
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthConfig"
+  /auth/phone/request:
+    post:
+      operationId: requestPhoneOtp
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhoneRequest"
+      responses:
+        "202": { description: Verification code sent }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+        "503": { $ref: "#/components/responses/ProviderUnavailable" }
+  /auth/phone/verify:
+    post:
+      operationId: verifyPhoneOtp
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhoneVerification"
+      responses:
+        "200":
+          description: Authenticated session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /auth/google/start:
+    get:
+      operationId: startGoogleAuth
+      tags: [auth]
+      responses:
+        "302": { description: Redirect to Google }
+        "503": { $ref: "#/components/responses/ProviderUnavailable" }
+  /auth/google/callback:
+    get:
+      operationId: googleAuthCallback
+      tags: [auth]
+      parameters:
+        - { name: code, in: query, required: false, schema: { type: string } }
+        - { name: state, in: query, required: false, schema: { type: string } }
+      responses:
+        "302": { description: Redirect to configured app callback }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+  /auth/me:
+    get:
+      operationId: currentUser
+      tags: [auth]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200":
+          description: Current user and profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      responses:
+        "204": { description: Signed out }
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Profile }
+    put:
+      operationId: updateProfile
+      tags: [profile]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200": { description: Updated profile }
+        "400": { $ref: "#/components/responses/InvalidRequest" }
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [jobs]
+      responses:
+        "200":
+          description: Active categories
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryList"
+  /jobs:
+    get:
+      operationId: listJobs
+      tags: [jobs]
+      parameters:
+        - { name: page, in: query, schema: { type: integer, minimum: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 100 } }
+        - { name: search, in: query, schema: { type: string } }
+        - { name: category, in: query, schema: { type: string } }
+        - { name: location, in: query, schema: { type: string } }
+        - { name: employmentType, in: query, schema: { type: string } }
+        - { name: workMode, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Paginated published jobs }
+    post:
+      operationId: createJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobInput" }
+      responses:
+        "201": { description: Draft job }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /jobs/mine:
+    get:
+      operationId: listMyJobs
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Current user's jobs }
+  /jobs/recommendations:
+    get:
+      operationId: listRecommendations
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Rule-based profile recommendations }
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      tags: [jobs]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Published job }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: updateJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobInput" }
+      responses:
+        "200": { description: Updated owned job }
+        "404": { $ref: "#/components/responses/NotFound" }
+    delete:
+      operationId: deleteJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Deleted owned job }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /jobs/{id}/submit:
+    post:
+      operationId: submitJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: Submitted for moderation }
+  /saved-jobs:
+    get:
+      operationId: listSavedJobs
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Current user's saved jobs }
+  /saved-jobs/{jobId}:
+    post:
+      operationId: saveJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Saved }
+    delete:
+      operationId: unsaveJob
+      tags: [jobs]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: jobId, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: Removed }
+  /admin/dashboard:
+    get:
+      operationId: adminDashboard
+      tags: [admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Platform statistics }
+        "403": { $ref: "#/components/responses/Forbidden" }
+  /admin/users:
+    get:
+      operationId: adminUsers
+      tags: [admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: User list }
+  /admin/jobs:
+    get:
+      operationId: adminJobs
+      tags: [admin]
+      security: [{ bearerAuth: [] }]
+      responses:
+        "200": { description: Job moderation list }
+  /admin/jobs/{id}/moderate:
+    post:
+      operationId: moderateJob
+      tags: [admin]
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [PUBLISHED, REJECTED, SUSPENDED] }
+                rejectionReason: { type: string }
+      responses:
+        "200": { description: Moderated job }
+  /admin/categories:
+    get: { operationId: adminCategories, tags: [admin], security: [{ bearerAuth: [] }], responses: { "200": { description: Category list } } }
+    post: { operationId: createCategory, tags: [admin], security: [{ bearerAuth: [] }], responses: { "201": { description: Created category } } }
+  /admin/reports:
+    get: { operationId: adminReports, tags: [admin], security: [{ bearerAuth: [] }], responses: { "200": { description: Report list } } }
+  /admin/settings:
+    get: { operationId: adminSettings, tags: [admin], security: [{ bearerAuth: [] }], responses: { "200": { description: Platform settings } } }
+    put: { operationId: updateAdminSettings, tags: [admin], security: [{ bearerAuth: [] }], responses: { "200": { description: Updated settings } } }
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  responses:
+    InvalidRequest: { description: Invalid request }
+    Unauthorized: { description: Authentication required }
+    Forbidden: { description: Insufficient permissions }
+    NotFound: { description: Resource not found }
+    ProviderUnavailable: { description: Provider configuration missing }
   schemas:
     HealthStatus:
       type: object
+      required: [status]
+      properties: { status: { type: string } }
+    AuthConfig:
+      type: object
+      required: [googleEnabled, phoneEnabled]
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        googleEnabled: { type: boolean }
+        phoneEnabled: { type: boolean }
+    PhoneRequest:
+      type: object
+      required: [phone]
+      properties: { phone: { type: string, minLength: 7 } }
+    PhoneVerification:
+      allOf:
+        - $ref: "#/components/schemas/PhoneRequest"
+        - type: object
+          required: [code]
+          properties: { code: { type: string, pattern: "^[0-9]{6}$" } }
+    AuthResponse:
+      type: object
+      required: [accessToken, expiresAt, user]
+      properties:
+        accessToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+        user: { $ref: "#/components/schemas/User" }
+    MeResponse:
+      type: object
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        profile: { $ref: "#/components/schemas/Profile" }
+    User:
+      type: object
+      required: [id, name, role, status]
+      properties:
+        id: { type: string }
+        email: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        name: { type: string }
+        role: { type: string, enum: [USER, ADMIN, SUPER_ADMIN] }
+        status: { type: string, enum: [ACTIVE, SUSPENDED] }
+    Profile:
+      type: object
+      properties:
+        userId: { type: string }
+        location: { type: string }
+        interests: { type: array, items: { type: string } }
+        experience: { type: string }
+        education: { type: string }
+        skills: { type: array, items: { type: string } }
+        employmentType: { type: string }
+        workPreference: { type: string }
+        workMode: { type: string }
+    ProfileInput:
+      allOf:
+        - $ref: "#/components/schemas/Profile"
+    Category:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        icon: { type: string }
+        isActive: { type: boolean }
+    CategoryList:
+      type: object
+      properties: { data: { type: array, items: { $ref: "#/components/schemas/Category" } } }
+    JobInput:
+      type: object
+      required: [title, company, description, location, employmentType, workMode]
+      properties:
+        title: { type: string }
+        company: { type: string }
+        description: { type: string }
+        categoryId: { type: string }
+        location: { type: string }
+        employmentType: { type: string }
+        workMode: { type: string }
+        salary: { type: string }
+        experience: { type: string }
+        education: { type: string }
+        skills: { type: array, items: { type: string } }
+        applicationEmail: { type: string, format: email }
+        applicationUrl: { type: string, format: uri }
+        closingDate: { type: string, format: date }
